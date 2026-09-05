@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة الكميات الهندسية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 30px 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: #1e3a8a;
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            color: #475569;
+            font-size: 14px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #cbd5e1;
+            background: #ffffff;
+            color: #334155;
+            font-weight: 700;
+            font-size: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: #1e3a8a;
+            color: #ffffff;
+            border-color: #1e3a8a;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
+        }
+
+        /* Cards */
+        .card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+
+        .card.active {
+            display: block;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input {
+            width: 100%;
+            background: #ffffff;
+            border: 2px solid #94a3b8;
+            color: #0f172a;
+            padding: 10px 12px;
+            padding-left: 50px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            background: #f8fafc;
+        }
+
+        .unit {
+            position: absolute;
+            left: 8px;
+            font-size: 12px;
+            color: #1e3a8a;
+            font-weight: 700;
+            background: #e2e8f0;
+            padding: 3px 8px;
+            border-radius: 6px;
+            pointer-events: none;
+        }
+
+        .btn-calc {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-calc:hover {
+            background: #1d4ed8;
+        }
+
+        /* Results */
+        .results {
+            margin-top: 20px;
+            padding: 18px;
+            background: #f0fdf4;
+            border: 2px solid #16a34a;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .results h4 {
+            color: #15803d;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .result-box {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .result-box span {
+            display: block;
+            font-size: 12px;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+
+        .result-box strong {
+            font-size: 17px;
+            color: #166534;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>الحاسبة الإنشائية الذكية</h1>
+        <p>حساب أطنان الحديد وأمتار الخرسانة والتكلفة المادية</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('slab', event)">السقوف والأساسات</button>
+        <button class="tab-btn" onclick="switchTab('columns', event)">الأعمدة</button>
+        <button class="tab-btn" onclick="switchTab('masonry', event)">البناء والطابوق</button>
+    </div>
+
+    <!-- السقوف -->
+    <div id="slab" class="card active">
+        <div class="card-title">حساب كميات السقف / الأساس</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>طول السقف</label>
+                <div class="input-wrapper">
+                    <input type="number" id="slab-length" placeholder="15">
+                    <span class="unit">متر</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>عرض السقف</label>
+                <div class="input-wrapper">
+                    <input type="number" id="slab-width" placeholder="10">
+                    <span class="unit">متر</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>سمك الصبة</label>
+                <div class="input-wrapper">
+                    <input type="number" id="slab-thickness" value="20">
+                    <span class="unit">سم</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>سعر متر الخرسانة</label>
+                <div class="input-wrapper">
+                    <input type="number" id="concrete-price" placeholder="75">
+                    <span class="unit">$</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>سعر طن الحديد</label>
+                <div class="input-wrapper">
+                    <input type="number" id="rebar-price" placeholder="700">
+                    <span class="unit">$</span>
+                </div>
+            </div>
+        </div>
+        <button class="btn-calc" onclick="calculateSlab()">احسب الكميات فوراً</button>
+
+        <div id="slab-results" class="results"></div>
+    </div>
+
+    <!-- الأعمدة -->
+    <div id="columns" class="card">
+        <div class="card-title">حساب كميات الأعمدة</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>عدد الأعمدة</label>
+                <div class="input-wrapper">
+                    <input type="number" id="col-count" placeholder="12">
+                    <span class="unit">عمود</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ارتفاع العمود</label>
+                <div class="input-wrapper">
+                    <input type="number" id="col-height" value="3">
+                    <span class="unit">متر</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>عرض العمود</label>
+                <div class="input-wrapper">
+                    <input type="number" id="col-width" value="25">
+                    <span class="unit">سم</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>طول العمود</label>
+                <div class="input-wrapper">
+                    <input type="number" id="col-length" value="60">
+                    <span class="unit">سم</span>
+                </div>
+            </div>
+        </div>
+        <button class="btn-calc" onclick="calculateColumns()">احسب الأعمدة</button>
+
+        <div id="col-results" class="results"></div>
+    </div>
+
+    <!-- البناء -->
+    <div id="masonry" class="card">
+        <div class="card-title">حساب عدد البلوك / الطابوق</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>مجموع أطوال الجدران</label>
+                <div class="input-wrapper">
+                    <input type="number" id="wall-length" placeholder="50">
+                    <span class="unit">متر</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ارتفاع الجدار</label>
+                <div class="input-wrapper">
+                    <input type="number" id="wall-height" value="3">
+                    <span class="unit">متر</span>
+                </div>
+            </div>
+        </div>
+        <button class="btn-calc" onclick="calculateMasonry()">احسب البلوك</button>
+
+        <div id="masonry-results" class="results"></div>
+    </div>
+</div>
+
+<script>
+function switchTab(tabId, event) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+
+function calculateSlab() {
+    let L = parseFloat(document.getElementById('slab-length').value) || 0;
+    let W = parseFloat(document.getElementById('slab-width').value) || 0;
+    let T = (parseFloat(document.getElementById('slab-thickness').value) || 0) / 100;
+    
+    let cPrice = parseFloat(document.getElementById('concrete-price').value) || 0;
+    let rPrice = parseFloat(document.getElementById('rebar-price').value) || 0;
+
+    if (!L || !W || !T) return alert("يرجى إدخال البيانات بصورة صحيحة");
+
+    let volume = L * W * T;
+    let rebarTons = (volume * 105) / 1000;
+    let totalPrice = (volume * cPrice) + (rebarTons * rPrice);
+
+    let resDiv = document.getElementById('slab-results');
+    resDiv.style.display = 'block';
+    resDiv.innerHTML = `
+        <h4>النتائج المحسوبة:</h4>
+        <div class="result-grid">
+            <div class="result-box"><span>حجم الخرسانة</span><strong>${volume.toFixed(2)} م³</strong></div>
+            <div class="result-box"><span>حديد التسليح</span><strong>${rebarTons.toFixed(2)} طن</strong></div>
+            ${totalPrice > 0 ? `<div class="result-box"><span>التكلفة المالية الإجمالية</span><strong>${totalPrice.toLocaleString()} $</strong></div>` : ''}
+        </div>
+    `;
+}
+
+function calculateColumns() {
+    let count = parseFloat(document.getElementById('col-count').value) || 0;
+    let H = parseFloat(document.getElementById('col-height').value) || 0;
+    let W = (parseFloat(document.getElementById('col-width').value) || 0) / 100;
+    let L = (parseFloat(document.getElementById('col-length').value) || 0) / 100;
+
+    if (!count || !H) return alert("يرجى إدخال بيانات الأعمدة");
+
+    let volume = count * H * W * L;
+    let rebarTons = (volume * 160) / 1000;
+
+    let resDiv = document.getElementById('col-results');
+    resDiv.style.display = 'block';
+    resDiv.innerHTML = `
+        <h4>نتائج الأعمدة:</h4>
+        <div class="result-grid">
+            <div class="result-box"><span>حجم خرسانة الأعمدة</span><strong>${volume.toFixed(2)} م³</strong></div>
+            <div class="result-box"><span>حديد تسليح الأعمدة</span><strong>${rebarTons.toFixed(2)} طن</strong></div>
+        </div>
+    `;
+}
+
+function calculateMasonry() {
+    let L = parseFloat(document.getElementById('wall-length').value) || 0;
+    let H = parseFloat(document.getElementById('wall-height').value) || 0;
+
+    if (!L || !H) return alert("يرجى إدخال أطوال الجدران");
+
+    let area = L * H;
+    let blocksCount = area * 12.5;
+
+    let resDiv = document.getElementById('masonry-results');
+    resDiv.style.display = 'block';
+    resDiv.innerHTML = `
+        <h4>نتائج البناء:</h4>
+        <div class="result-grid">
+            <div class="result-box"><span>المساحة الكلية</span><strong>${area.toFixed(2)} م²</strong></div>
+            <div class="result-box"><span>عدد البلوك المطلوب</span><strong>${Math.ceil(blocksCount)} بلوكة</strong></div>
+        </div>
+    `;
+}
+</script>
+
+</body>
+</html>
